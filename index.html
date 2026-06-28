@@ -13,7 +13,7 @@
       padding: 15px;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background: rgba(15, 23, 42, 0.95);
       border-radius: 16px;
@@ -23,20 +23,22 @@
     h1 { text-align: center; color: #60a5fa; margin-bottom: 25px; }
     .tab {
       display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
       background: #1e2937;
       border-radius: 8px;
       padding: 5px;
       margin-bottom: 20px;
     }
     .tab button {
-      flex: 1;
-      padding: 12px;
+      padding: 12px 15px;
       background: none;
       border: none;
       color: #cbd5e1;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 14px;
     }
     .tab button.active {
       background: #3b82f6;
@@ -69,97 +71,172 @@
       padding: 15px;
       background: #1e2937;
       border-radius: 8px;
-      font-size: 18px;
-      min-height: 50px;
+      font-size: 17px;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>⚛️ Physics Calculator</h1>
+    <h1>⚛️ Advanced Physics Calculator</h1>
 
     <div class="tab">
       <button class="active" onclick="openTab(0)">Motion</button>
       <button onclick="openTab(1)">Force & Energy</button>
-      <button onclick="openTab(2)">Waves & Light</button>
+      <button onclick="openTab(2)">Projectile</button>
+      <button onclick="openTab(3)">Gravitation</button>
+      <button onclick="openTab(4)">Waves</button>
+      <button onclick="openTab(5)">Electricity</button>
     </div>
 
-    <!-- Motion Calculator -->
+    <!-- 1. Kinematics -->
     <div class="calculator active" id="calc0">
       <h2>Kinematics Calculator</h2>
       <input type="number" id="u" placeholder="Initial Velocity u (m/s)" />
       <input type="number" id="a" placeholder="Acceleration a (m/s²)" />
-      <input type="number" id="t" placeholder="Time t (sec)" />
+      <input type="number" id="t" placeholder="Time t (s)" />
       <button onclick="calcMotion()">Calculate</button>
       <div class="result" id="result0"></div>
     </div>
 
-    <!-- Force & Energy -->
+    <!-- 2. Force & Energy -->
     <div class="calculator" id="calc1">
       <h2>Force & Energy</h2>
       <select id="type1">
         <option value="f">Force = m × a</option>
         <option value="ke">Kinetic Energy</option>
-        <option value="pe">Potential Energy</option>
+        <option value="pe">Gravitational PE</option>
+        <option value="work">Work = F × s</option>
       </select>
       <input type="number" id="m1" placeholder="Mass (kg)" />
-      <input type="number" id="val1" placeholder="Acceleration / Velocity / Height" />
+      <input type="number" id="val1" placeholder="a / v / h / s" />
       <button onclick="calcForceEnergy()">Calculate</button>
       <div class="result" id="result1"></div>
     </div>
 
-    <!-- Waves -->
+    <!-- 3. Projectile Motion -->
     <div class="calculator" id="calc2">
-      <h2>Wave Speed</h2>
+      <h2>Projectile Motion</h2>
+      <input type="number" id="v0" placeholder="Initial Velocity (m/s)" />
+      <input type="number" id="angle" placeholder="Angle (degrees)" />
+      <button onclick="calcProjectile()">Calculate</button>
+      <div class="result" id="result2"></div>
+    </div>
+
+    <!-- 4. Gravitation -->
+    <div class="calculator" id="calc3">
+      <h2>Gravitation</h2>
+      <input type="number" id="m1g" placeholder="Mass 1 (kg)" />
+      <input type="number" id="m2g" placeholder="Mass 2 (kg)" />
+      <input type="number" id="r" placeholder="Distance (m)" />
+      <button onclick="calcGravity()">Calculate Force</button>
+      <div class="result" id="result3"></div>
+    </div>
+
+    <!-- 5. Waves -->
+    <div class="calculator" id="calc4">
+      <h2>Wave & Sound</h2>
       <input type="number" id="f" placeholder="Frequency f (Hz)" />
       <input type="number" id="l" placeholder="Wavelength λ (m)" />
       <button onclick="calcWave()">Calculate Speed</button>
-      <div class="result" id="result2"></div>
+      <div class="result" id="result4"></div>
+    </div>
+
+    <!-- 6. Electricity -->
+    <div class="calculator" id="calc5">
+      <h2>Electricity (Ohm's Law)</h2>
+      <select id="type6">
+        <option value="v">Voltage V = I × R</option>
+        <option value="i">Current I = V / R</option>
+        <option value="r">Resistance R = V / I</option>
+        <option value="p">Power P = V × I</option>
+      </select>
+      <input type="number" id="v6" placeholder="Voltage (V)" />
+      <input type="number" id="i6" placeholder="Current (A)" />
+      <input type="number" id="r6" placeholder="Resistance (Ω)" />
+      <button onclick="calcElectricity()">Calculate</button>
+      <div class="result" id="result5"></div>
     </div>
   </div>
-
+<p style="text-align:center; margin-top:20px;">
+  <a href="privacy.html" style="color:#60a5fa; text-decoration:none;">Privacy Policy</a>
+</p>
   <script>
     function openTab(n) {
       document.querySelectorAll('.calculator').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab button').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab button').forEach((el, i) => {
+        el.classList.toggle('active', i === n);
+      });
       document.getElementById('calc'+n).classList.add('active');
-      document.querySelectorAll('.tab button')[n].classList.add('active');
     }
 
+    // Kinematics
     function calcMotion() {
       let u = parseFloat(document.getElementById('u').value) || 0;
       let a = parseFloat(document.getElementById('a').value) || 0;
       let t = parseFloat(document.getElementById('t').value) || 0;
-
       let v = u + a * t;
       let s = u*t + 0.5*a*t*t;
-
-      document.getElementById('result0').innerHTML = `
-        Final Velocity (v) = <b>${v.toFixed(2)} m/s</b><br>
-        Displacement (s) = <b>${s.toFixed(2)} m</b>
-      `;
+      document.getElementById('result0').innerHTML = `Final Velocity = <b>${v.toFixed(2)} m/s</b><br>Displacement = <b>${s.toFixed(2)} m</b>`;
     }
 
+    // Force & Energy
     function calcForceEnergy() {
       let type = document.getElementById('type1').value;
       let m = parseFloat(document.getElementById('m1').value) || 0;
       let val = parseFloat(document.getElementById('val1').value) || 0;
       let res = document.getElementById('result1');
-
-      if(type === 'f') {
-        res.innerHTML = `Force = <b>${(m*val).toFixed(2)} N</b>`;
-      } else if(type === 'ke') {
-        res.innerHTML = `Kinetic Energy = <b>${(0.5*m*val*val).toFixed(2)} J</b>`;
-      } else {
-        res.innerHTML = `Potential Energy = <b>${(m*9.8*val).toFixed(2)} J</b>`;
-      }
+      if(type === 'f') res.innerHTML = `Force = <b>${(m*val).toFixed(2)} N</b>`;
+      else if(type === 'ke') res.innerHTML = `KE = <b>${(0.5*m*val*val).toFixed(2)} J</b>`;
+      else if(type === 'pe') res.innerHTML = `PE = <b>${(m*9.8*val).toFixed(2)} J</b>`;
+      else res.innerHTML = `Work = <b>${(m*val).toFixed(2)} J</b>`;
     }
 
+    // Projectile
+    function calcProjectile() {
+      let v = parseFloat(document.getElementById('v0').value) || 0;
+      let angle = parseFloat(document.getElementById('angle').value) || 0;
+      let rad = angle * Math.PI / 180;
+      let range = (v*v * Math.sin(2*rad)) / 9.8;
+      let maxH = (v*v * Math.sin(rad)*Math.sin(rad)) / (2*9.8);
+      let time = (2*v*Math.sin(rad))/9.8;
+      document.getElementById('result2').innerHTML = `
+        Range = <b>${range.toFixed(2)} m</b><br>
+        Max Height = <b>${maxH.toFixed(2)} m</b><br>
+        Time of Flight = <b>${time.toFixed(2)} s</b>
+      `;
+    }
+
+    // Gravitation
+    function calcGravity() {
+      let m1 = parseFloat(document.getElementById('m1g').value) || 0;
+      let m2 = parseFloat(document.getElementById('m2g').value) || 0;
+      let r = parseFloat(document.getElementById('r').value) || 0;
+      let G = 6.67e-11;
+      let f = (G * m1 * m2) / (r * r);
+      document.getElementById('result3').innerHTML = `Gravitational Force = <b>${f.toExponential(3)} N</b>`;
+    }
+
+    // Wave
     function calcWave() {
       let f = parseFloat(document.getElementById('f').value) || 0;
       let l = parseFloat(document.getElementById('l').value) || 0;
       let v = f * l;
-      document.getElementById('result2').innerHTML = `Wave Speed = <b>${v.toFixed(2)} m/s</b>`;
+      document.getElementById('result4').innerHTML = `Wave Speed = <b>${v.toFixed(2)} m/s</b>`;
+    }
+
+    // Electricity
+    function calcElectricity() {
+      let type = document.getElementById('type6').value;
+      let v = parseFloat(document.getElementById('v6').value) || 0;
+      let i = parseFloat(document.getElementById('i6').value) || 0;
+      let r = parseFloat(document.getElementById('r6').value) || 0;
+      let res = document.getElementById('result5');
+      
+      if(type === 'v') res.innerHTML = `Voltage = <b>${(i*r).toFixed(2)} V</b>`;
+      else if(type === 'i') res.innerHTML = `Current = <b>${(v/r).toFixed(2)} A</b>`;
+      else if(type === 'r') res.innerHTML = `Resistance = <b>${(v/i).toFixed(2)} Ω</b>`;
+      else res.innerHTML = `Power = <b>${(v*i).toFixed(2)} W</b>`;
     }
   </script>
 </body>
